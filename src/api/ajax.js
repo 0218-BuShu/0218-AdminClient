@@ -30,20 +30,20 @@ export default function ajax(url, data = {}, method = "GET") {
 
 
 
-async function login() {
-    // try {
-    //     const response = await ajax('./login', {
-    //         username: 'admin',
-    //         password: 'admin'
-    //     }, 'POST')
-    // } catch (error) { //处理请求异常
-    //     alert('请求出错：' + error.message)
-    // }
+// async function login() {
+//     // try {
+//     //     const response = await ajax('./login', {
+//     //         username: 'admin',
+//     //         password: 'admin'
+//     //     }, 'POST')
+//     // } catch (error) { //处理请求异常
+//     //     alert('请求出错：' + error.message)
+//     // }
 
-    const result = await ajax('/login', {username: 'admin',password: 'admin'}, 'POST')
-    if (result.status === 0) {
+//     const result = await ajax('/login', {username: 'admin',password: 'admin'}, 'POST')
+//     if (result.status === 0) {
 
-    } else {
+//     } else {
 
-    }
-}
+//     }
+// }

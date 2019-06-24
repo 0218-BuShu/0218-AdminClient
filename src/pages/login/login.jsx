@@ -1,7 +1,12 @@
 import React from 'react'
-import { Form, Icon, Input, Button } from 'antd'
-import logo from "./images/logo.png";
+import { Form, Icon, Input, Button, message } from 'antd'
+import {Redirect} from 'react-router-dom'
+
+import { reqLogin } from '../../api'
+import logo from "../../assets/images/logo.png";
 import './login.less'
+import memoryUtils from '../../utils/memoryUtils'
+import {saveUser} from '../../utils/storageUtils'
 
 
 
@@ -16,13 +21,27 @@ class Login extends React.Component {
         console.log(Username, password, values); */
 
         //统一进行所有表单项的验证
-        this.props.form.validateFields((err, value) => {
+        this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                console.log('发送登录Ajax请求：', value)
+                // console.log('发送登录Ajax请求：', value)
+                const { username, password } = values
+                const result = await reqLogin(username, password)
+                //如果登录成功了
+                if (result.status === 0) {
+                    //保存用户信息
+                    const user = result.data
+                    saveUser(user)
+                    memoryUtils.user = user //保存在内存中
+                    //跳转admin界面
+                    this.props.history.replace('/')
+                } else {
+                    //如果登录失败了
+                    message.error(result.msg, 2)
+                }
             }
         })
     }
-    validator = (rule, value, callback) => {
+    validator = (rule, value='', callback) => {
         value = value.trim()
         if (!value) {
             callback('必须输入密码!')
@@ -38,6 +57,9 @@ class Login extends React.Component {
     }
     render() {
         const { getFieldDecorator } = this.props.form;
+        if(memoryUtils.user._id){
+            return <Redirect to = '/'/>
+        }
         return (
             <div className="login">
                 <header className="login-header">
@@ -48,7 +70,7 @@ class Login extends React.Component {
                     <h2>用户登陆</h2>
                     <Form onSubmit={this.handleSubmit} className="login-form">
                         <Form.Item>
-                            {getFieldDecorator('Username', {
+                            {getFieldDecorator('username', {
                                 initialValue: '',
                                 rules: [
                                     { required: true, whitespace: true, message: '请输入用户名!' },
@@ -62,7 +84,7 @@ class Login extends React.Component {
                         </Form.Item>
                         <Form.Item>
                             {getFieldDecorator('password', {
-                                initialValue: '',
+                                // initialValue: '',
                                 rules: [
                                     { validator: this.validator }
                                 ]
